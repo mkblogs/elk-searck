@@ -1,0 +1,75 @@
+version: '3'
+services:
+  server-code:    
+    container_name: elk-search
+    build:
+      context: .
+      dockerfile: apidockerfile  
+    depends_on:
+      - logstash
+    expose:
+      - "8080"
+    ports:
+      - 8080:8080          
+    networks:
+        - backbone 
+  
+  elasticsearch: 
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+    container_name: elasticsearch
+    environment:     
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.type=single-node"
+      - bootstrap.memory_lock=true
+      - cluster.name=springbootdockercompose
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.flood_stage=200mb
+      - cluster.routing.allocation.disk.watermark.low=500mb
+      - cluster.routing.allocation.disk.watermark.high=300mb
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200      
+    networks:
+        - backbone  
+ 
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.8.0
+    container_name: kibana
+    depends_on: 
+      - elasticsearch
+    environment: 
+      - "ELASTICSEARCH_HOSTS=http://elasticsearch:9200/"
+    ports: 
+     - "5601:5601"   
+    networks:
+        - backbone          
+      
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.8.0
+    container_name: logstash
+    ports: 
+      - "5000:5000"
+    command: logstash -f /usr/share/logstash/config/logstash.conf
+    volumes: 
+      - ./logstash.conf:/usr/share/logstash/config/logstash.conf:ro     
+    environment: 
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"   
+    networks: 
+      - backbone
+    depends_on: 
+      - elasticsearch  
+            
+networks:
+  backbone:
+   driver: bridge   
+
+volumes:
+  esdata2: 
+    driver: local
+        
+        
