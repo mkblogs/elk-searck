@@ -37,7 +37,7 @@ CMD ["java","-jar","elk.jar"]
 ```
 So log files are generated in /tmp/target/logs folder
 
-So we need to move these log files to volume as below
+So we need to move these log files to docker volume as below
 
 ```docker
 
