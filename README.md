@@ -1,5 +1,11 @@
 # elk stack using docker volume
  
+ ### Run
+ 
+ ```
+  docker-compose up -d
+ ```   
+ 
 In this example , we feed generated log files to elasticsearch by using docker volume. 
 
 Server Code generate log files under target/logs folder 
