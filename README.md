@@ -1,4 +1,4 @@
-# elk-searck-part1
+# elk stack using docker volume
  
 In this example , we feed generated log files to elasticsearch by using docker volume. 
 
